@@ -33,7 +33,9 @@ jobs:
           --health-retries=20
 
     env:
-      DATABASE_URL: "mysql://handwerk:handwerk@127.0.0.1:3306/handwerk?serverVersion=8.0.32&charset=utf8mb4"
+      # root, because the test run creates a second database (handwerk_test)
+      # and the service container only grants the app user rights on its own.
+      DATABASE_URL: "mysql://root:root@127.0.0.1:3306/handwerk?serverVersion=8.0.32&charset=utf8mb4"
 
     steps:
       - uses: actions/checkout@v4

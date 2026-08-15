@@ -11,6 +11,8 @@ services:
       - "13306:3306"
     volumes:
       - database_data:/var/lib/mysql
+      # creates handwerk_test and grants the app user access to it
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
       interval: 5s
