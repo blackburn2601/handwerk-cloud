@@ -3,7 +3,11 @@ services:
     image: mysql:8.0
     container_name: handwerk-db
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      # No root password is ever set to a known value: the entrypoint generates
+      # a random one, so root cannot be used from outside the container. The
+      # application connects as an unprivileged user that owns only its own
+      # databases.
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: handwerk
       MYSQL_USER: handwerk
       MYSQL_PASSWORD: handwerk
@@ -11,13 +15,17 @@ services:
       - "13306:3306"
     volumes:
       - database_data:/var/lib/mysql
-      # creates handwerk_test and grants the app user access to it
+      # Creates handwerk_test and grants the app user access to it. Runs as
+      # part of the entrypoint's first-boot initialisation.
       - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      # Authenticates as the application user and runs a real query, so the
+      # container is only "healthy" once it can actually serve the app.
+      test: ["CMD", "mysql", "-h", "127.0.0.1", "-uhandwerk", "-phandwerk", "handwerk", "-e", "SELECT 1"]
       interval: 5s
       timeout: 5s
-      retries: 20
+      retries: 30
+      start_period: 30s
 
 volumes:
   database_data:

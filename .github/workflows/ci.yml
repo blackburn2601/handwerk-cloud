@@ -16,27 +16,6 @@ jobs:
       matrix:
         php: ['8.1', '8.2']
 
-    services:
-      database:
-        image: mysql:8.0
-        env:
-          MYSQL_ROOT_PASSWORD: root
-          MYSQL_DATABASE: handwerk
-          MYSQL_USER: handwerk
-          MYSQL_PASSWORD: handwerk
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
-          --health-interval=5s
-          --health-timeout=5s
-          --health-retries=20
-
-    env:
-      # root, because the test run creates a second database (handwerk_test)
-      # and the service container only grants the app user rights on its own.
-      DATABASE_URL: "mysql://root:root@127.0.0.1:3306/handwerk?serverVersion=8.0.32&charset=utf8mb4"
-
     steps:
       - uses: actions/checkout@v4
 
@@ -71,10 +50,18 @@ jobs:
       - name: Lint YAML
         run: bin/console lint:yaml config
 
-      - name: Create test database
-        run: |
-          bin/console doctrine:database:create --env=test --if-not-exists
-          bin/console doctrine:schema:create --env=test
+      # The same compose file developers use, so CI and local development share
+      # one database definition — including the unprivileged application user
+      # and the grant on the _test database.
+      - name: Start database
+        run: docker compose up -d --wait --wait-timeout 120
+
+      - name: Create test schema
+        run: bin/console doctrine:schema:create --env=test
 
       - name: Run tests
         run: vendor/bin/phpunit
+
+      - name: Database logs on failure
+        if: failure()
+        run: docker compose logs database
