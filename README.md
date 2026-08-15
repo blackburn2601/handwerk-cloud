@@ -9,7 +9,7 @@ trade business from customer record to quote to scheduled job, with site photos 
 touch-drawn sketches attached along the way.
 
 [![CI](https://github.com/blackburn2601/handwerk-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/blackburn2601/handwerk-cloud/actions/workflows/ci.yml)
-![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777bb4)
+![PHP](https://img.shields.io/badge/PHP-8.4%20|%208.5-777bb4)
 ![Symfony](https://img.shields.io/badge/Symfony-7.4-000000)
 ![Doctrine](https://img.shields.io/badge/Doctrine%20ORM-3.x-fc6a31)
 ![License](https://img.shields.io/badge/license-MIT-blue)
@@ -63,13 +63,13 @@ The interface is entirely in German, because its users are.
 
 | | |
 |---|---|
-| Runtime | PHP 8.2 – 8.4 |
+| Runtime | PHP 8.4 · 8.5 |
 | Framework | Symfony 7.4 (Twig, Forms, Security, Validator) |
 | Persistence | Doctrine ORM 3.x, MySQL 8 |
 | Frontend | Twig + a hand-written CSS design system, vanilla JS — no framework, no build step |
 | Icons | Inline SVG, no icon font |
 | Tests | PHPUnit 11, Symfony BrowserKit |
-| CI | GitHub Actions — lint, container/Twig/YAML validation, tests on 8.2 / 8.3 / 8.4 |
+| CI | GitHub Actions — lint, container/Twig/YAML validation, tests on 8.4 / 8.5 |
 
 ## Domain model
 
@@ -107,7 +107,7 @@ If you are reading the code to judge it, these are the parts worth your time:
 
 ## Quick start
 
-Requires PHP ≥ 8.2 with `gd`, `zip`, `intl` and `pdo_mysql`, plus Composer and Docker.
+Requires PHP ≥ 8.4 with `gd`, `zip`, `intl` and `pdo_mysql`, plus Composer and Docker.
 
 ```bash
 git clone git@github.com:blackburn2601/handwerk-cloud.git && cd handwerk-cloud

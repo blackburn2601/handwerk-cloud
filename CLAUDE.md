@@ -31,7 +31,7 @@ never touch dev data.
 
 ### Stack
 
-Symfony 7.4 / Doctrine ORM 3 / PHP 8.2+ (8.4 locally). The suite runs clean — **no deprecation
+Symfony 7.4 / Doctrine ORM 3 / PHP 8.4+. The suite runs clean — **no deprecation
 notices**. If any appear, treat them as a regression rather than noise:
 
 - `enable_native_lazy_objects: true` in `doctrine.yaml` replaces generated proxies.
