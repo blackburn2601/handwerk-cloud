@@ -1,6 +1,8 @@
 {
+    "name": "blackburn2601/handwerk-cloud",
+    "description": "Auftragsverwaltung für Handwerksbetriebe — Symfony field-service app for customers, quotes and jobs with site photos and canvas sketches.",
     "type": "project",
-    "license": "proprietary",
+    "license": "MIT",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
