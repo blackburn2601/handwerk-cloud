@@ -89,7 +89,6 @@ class TaskDrawRendererTest extends TestCase
         ob_start();
         imagepng($image);
         $binary = ob_get_clean();
-        imagedestroy($image);
 
         return 'data:image/png;base64,'.base64_encode($binary);
     }

@@ -1,0 +1,13 @@
+# Classic, session-backed CSRF tokens.
+#
+# Symfony 7.2+ also offers stateless (double-submit cookie) tokens, but those
+# rely on JavaScript swapping a placeholder into the form before submit. This
+# application has no build step and a hand-written login form, so session-backed
+# tokens are used instead — they work with JavaScript disabled.
+framework:
+    csrf_protection:
+        enabled: true
+
+    form:
+        csrf_protection:
+            enabled: true

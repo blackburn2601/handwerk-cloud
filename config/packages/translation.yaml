@@ -1,13 +1,10 @@
+# The interface is German. Application strings are inline German literals, but
+# framework-supplied messages (security errors, validation constraints) come
+# from the bundled catalogues and need the locale set to reach them.
 framework:
-    default_locale: en
+    default_locale: de
     translator:
         default_path: '%kernel.project_dir%/translations'
         fallbacks:
+            - de
             - en
-#        providers:
-#            crowdin:
-#                dsn: '%env(CROWDIN_DSN)%'
-#            loco:
-#                dsn: '%env(LOCO_DSN)%'
-#            lokalise:
-#                dsn: '%env(LOKALISE_DSN)%'

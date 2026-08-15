@@ -1,57 +1,59 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard · HandwerkCloud{% endblock %}
 
 {% block body %}
-<div class="row">
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Kunden</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ customers }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users"></i>
-                    </div>
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('dashboard', 20) }}</span>
+            <div>
+                <h1>Dashboard</h1>
+                <div class="page-sub">
+                    {{ is_granted('ROLE_ADMIN') ? 'Überblick über alle Datensätze' : 'Überblick über Ihre Datensätze' }}
                 </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            offene Angebote</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ offers }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-users"></i>
-                    </div>
-                </div>
-            </div>
+        <div class="page-actions">
+            <a class="btn btn-secondary" href="{{ path('app_customer_new') }}">{{ ui.icon('plus') }} Kunde</a>
+            <a class="btn btn-primary" href="{{ path('app_offer_new') }}">{{ ui.icon('plus') }} Angebot</a>
         </div>
     </div>
-    <div class="col-xl-3 col-md-6 mb-4">
-        <div class="card border-left-warning shadow h-100 py-2">
-            <div class="card-body">
-                <div class="row no-gutters align-items-center">
-                    <div class="col mr-2">
-                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            offene Aufträge</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ tasks }}</div>
-                    </div>
-                    <div class="col-auto">
-                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
+    <div class="stat-grid">
+        <a class="stat" href="{{ path('app_customer_index') }}">
+            <span class="stat-icon">{{ ui.icon('users', 22) }}</span>
+            <span>
+                <span class="stat-label">Kunden</span>
+                <span class="stat-value">{{ customers }}</span>
+            </span>
+        </a>
+        <a class="stat" href="{{ path('app_offer_index') }}">
+            <span class="stat-icon is-amber">{{ ui.icon('file', 22) }}</span>
+            <span>
+                <span class="stat-label">Angebote</span>
+                <span class="stat-value">{{ offers }}</span>
+            </span>
+        </a>
+        <a class="stat" href="{{ path('app_task_index') }}">
+            <span class="stat-icon is-green">{{ ui.icon('wrench', 22) }}</span>
+            <span>
+                <span class="stat-label">Aufträge</span>
+                <span class="stat-value">{{ tasks }}</span>
+            </span>
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-head">
+            <h2>Schnellzugriff</h2>
+        </div>
+        <div class="card-body">
+            <div class="btn-row">
+                <a class="btn btn-secondary" href="{{ path('app_customer_new') }}">{{ ui.icon('users') }} Kunde anlegen</a>
+                <a class="btn btn-secondary" href="{{ path('app_offer_new') }}">{{ ui.icon('file') }} Angebot erstellen</a>
+                <a class="btn btn-secondary" href="{{ path('app_task_index') }}">{{ ui.icon('wrench') }} Aufträge ansehen</a>
+            </div>
+        </div>
+    </div>
 {% endblock %}

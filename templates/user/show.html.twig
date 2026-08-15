@@ -1,34 +1,30 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}User{% endblock %}
+{% block title %}{{ user.firstname }} {{ user.surname }} · HandwerkCloud{% endblock %}
 
 {% block body %}
-    <h1>User</h1>
-
-    <table class="table table-bordered table-striped">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ user.password }}</td>
-            </tr>
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_user_index') }}">back to list</a>
-
-    <a href="{{ path('app_user_edit', {'id': user.id}) }}">edit</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+    <a class="back-link" href="{{ path('app_user_index') }}">{{ ui.icon('arrow-left', 15) }} Zurück zur Übersicht</a>
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('user-cog', 20) }}</span>
+            <div>
+                <h1>{{ user.firstname }} {{ user.surname }}</h1>
+                <div class="page-sub">{{ user.email }}</div>
+            </div>
+        </div>
+        <div class="page-actions">
+            <a class="btn btn-primary" href="{{ path('app_user_edit', {'id': user.id}) }}">{{ ui.icon('pencil') }} Bearbeiten</a>
+        </div>
+    </div>
+    <div class="card"><div class="card-body">
+        <div class="form-grid">
+            <div class="field"><span class="form-label">Rollen</span>
+                <div>{% for role in user.roles %}<span class="badge {{ role == 'ROLE_ADMIN' ? 'is-brand' }}">{{ role }}</span> {% endfor %}</div>
+            </div>
+            <div class="field"><span class="form-label">Kunden</span><div>{{ user.customers|length }}</div></div>
+            <div class="field"><span class="form-label">Angebote</span><div>{{ user.offers|length }}</div></div>
+            <div class="field"><span class="form-label">Aufträge</span><div>{{ user.tasks|length }}</div></div>
+        </div>
+    </div></div>
 {% endblock %}

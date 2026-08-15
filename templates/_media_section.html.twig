@@ -1,0 +1,39 @@
+{#
+    Shared media panel for photos and sketches.
+
+    Params: heading, icon_name, items, dir (twig global), delete_route,
+            confirm, add_url (optional), empty_text, fit ('cover'|'contain')
+#}
+{% import '_icons.html.twig' as ui %}
+
+<div class="card">
+    <div class="card-head">
+        <h2>{{ heading }}</h2>
+        <span class="result-count">{{ items|length }}</span>
+        {% if add_url is defined and add_url %}
+            <div class="card-actions">
+                <a class="btn btn-secondary btn-sm" href="{{ add_url }}">{{ ui.icon('plus', 15) }} Hinzufügen</a>
+            </div>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        {% if items is empty %}
+            <div class="empty" style="padding:2rem 1rem">
+                {{ ui.icon(icon_name, 36) }}
+                <p>{{ empty_text }}</p>
+            </div>
+        {% else %}
+            <div class="media-grid">
+                {% for item in items %}
+                    <figure class="media-item {{ fit|default('') == 'contain' ? 'is-contain' : '' }}">
+                        <img src="{{ asset(dir ~ item.path) }}" alt="" loading="lazy">
+                        <form method="post" action="{{ path(delete_route, {'id': item.id}) }}" data-confirm="{{ confirm }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ item.id) }}">
+                            <button class="media-del" type="submit" aria-label="Löschen">{{ ui.icon('trash', 15) }}</button>
+                        </form>
+                    </figure>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>

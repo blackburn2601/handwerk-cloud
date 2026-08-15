@@ -1,43 +1,24 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}Neues Angebot{% endblock %}
+{% block title %}Angebot erstellen · HandwerkCloud{% endblock %}
 
 {% block body %}
-    <h1><i class="fas fa-file-invoice"></i> Angebot anlegen</h1>
+    <a class="back-link" href="{{ path('app_offer_index') }}">{{ ui.icon('arrow-left', 15) }} Zurück zur Übersicht</a>
 
-    {{ form_start(form) }}
-    <div class="my-custom-class-for-errors">
-        {{ form_errors(form) }}
-    </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.customer, {'attr': {'class': 'form-control form-select'}}) }}
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('file', 20) }}</span>
+            <div>
+                <h1>Angebot erstellen</h1>
+                <div class="page-sub">Fotos und Zeichnungen lassen sich nach dem Speichern ergänzen</div>
+            </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.comment, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.textarea, {'attr': {'class': 'form-control border-1 small'}}) }}
+
+    <div class="card">
+        <div class="card-body">
+            {{ include('offer/_form.html.twig', {'button_label': 'Angebot erstellen'}) }}
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.offerDate, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.termDate, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-    </div>
-    <br>
-    <button class="btn btn-success btn-icon-split">
-        <span class="icon text-white-50">
-            <i class="fas fa-check"></i>
-        </span>
-        <span class="text">{{ button_label|default('Speichern') }}</span>
-    </button>
-    {{ form_end(form) }}
-    <br>
-    <a href="{{ path('app_offer_index') }}">Zurück zur Übersicht</a>
 {% endblock %}

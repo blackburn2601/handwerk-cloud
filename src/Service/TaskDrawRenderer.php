@@ -30,12 +30,8 @@ class TaskDrawRenderer
         $filename = sprintf('%s-%s.png', $taskDraw->getOffer()?->getId() ?? 'draft', bin2hex(random_bytes(8)));
 
         if (!imagepng($image, $this->taskDrawingsDir.'/'.$filename, 6)) {
-            imagedestroy($image);
-
             throw new \RuntimeException('Die Zeichnung konnte nicht gespeichert werden.');
         }
-
-        imagedestroy($image);
 
         return $filename;
     }

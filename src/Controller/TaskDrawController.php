@@ -45,7 +45,7 @@ class TaskDrawController extends AbstractController
             } catch (\InvalidArgumentException $e) {
                 $this->addFlash('danger', $e->getMessage());
 
-                return $this->renderForm('task_draw/new.html.twig', [
+                return $this->render('task_draw/new.html.twig', [
                     'offer' => $offer,
                     'task_draw' => $taskDraw,
                     'form' => $form,
@@ -72,7 +72,7 @@ class TaskDrawController extends AbstractController
             return $this->redirectToRoute('app_offer_edit', ['id' => $offer->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('task_draw/new.html.twig', [
+        return $this->render('task_draw/new.html.twig', [
             'offer' => $offer,
             'task_draw' => $taskDraw,
             'form' => $form,

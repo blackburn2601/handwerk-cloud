@@ -1,167 +1,145 @@
-const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
-let isDrawing = false;
-let x = 0;
-let y = 0;
-var offsetX;
-var offsetY;
+/*
+ * Sketch pad.
+ *
+ * Uses Pointer Events so mouse, touch and stylus run through one code path —
+ * the previous implementation kept separate mouse and touch handlers that
+ * could drift apart.
+ *
+ * On submit the canvas is serialised into the hidden TaskDraw::base64Data
+ * field, which the server decodes and stores as a PNG.
+ */
+(function () {
+    'use strict';
 
-var elem = document.documentElement;
-function openFullscreen() {
-    if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) { /* Safari */
-        elem.webkitRequestFullscreen();
-    } else if (elem.msRequestFullscreen) { /* IE11 */
-        elem.msRequestFullscreen();
+    var canvas = document.getElementById('canvas');
+    if (!canvas) return;
+
+    var ctx = canvas.getContext('2d');
+    var widthSelect = document.getElementById('selWidth');
+    var swatches = document.getElementById('swatches');
+    var target = document.getElementById('task_draw_base64Data');
+    var form = document.getElementById('sketch-form');
+
+    var colour = '#0f172a';
+    var drawing = false;
+    var undoStack = [];
+
+    /* A transparent PNG would print badly, so start from white. */
+    function fill() {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+    fill();
+
+    function snapshot() {
+        undoStack.push(canvas.toDataURL());
+        if (undoStack.length > 25) undoStack.shift();
     }
 
-    document.getElementById('sidebarToggle').click();
-}
-
-function closeFullscreen() {
-    if (document.exitFullscreen) {
-        document.exitFullscreen();
-    } else if (document.webkitExitFullscreen) { /* Safari */
-        document.webkitExitFullscreen();
-    } else if (document.msExitFullscreen) { /* IE11 */
-        document.msExitFullscreen();
+    /* The canvas is scaled by CSS, so map client coords onto its real size. */
+    function pos(event) {
+        var rect = canvas.getBoundingClientRect();
+        return {
+            x: (event.clientX - rect.left) * (canvas.width / rect.width),
+            y: (event.clientY - rect.top) * (canvas.height / rect.height)
+        };
     }
 
-    document.getElementById('sidebarToggle').click();
-}
+    function start(event) {
+        if (event.button !== undefined && event.button !== 0) return;
+        event.preventDefault();
+        snapshot();
+        drawing = true;
+        try { canvas.setPointerCapture(event.pointerId); } catch (e) { /* not capturable */ }
 
-function startup() {
-    context.fillStyle = "white";
-    context.fillRect(0, 0, canvas.width, canvas.height);
+        var p = pos(event);
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = colour;
+        ctx.lineWidth = parseFloat(widthSelect ? widthSelect.value : 2);
 
-    canvas.addEventListener('touchstart', handleStart);
-    canvas.addEventListener('touchend', handleEnd);
-    canvas.addEventListener('touchcancel', handleCancel);
-    canvas.addEventListener('touchmove', handleMove);
-    canvas.addEventListener('mousedown', (e) => {
-        x = e.offsetX;
-        y = e.offsetY;
-        isDrawing = true;
-    });
-
-    canvas.addEventListener('mousemove', (e) => {
-        if (isDrawing) {
-            drawLine(context, x, y, e.offsetX, e.offsetY);
-            x = e.offsetX;
-            y = e.offsetY;
-        }
-    });
-
-    canvas.addEventListener('mouseup', (e) => {
-        if (isDrawing) {
-            drawLine(context, x, y, e.offsetX, e.offsetY);
-            x = 0;
-            y = 0;
-            isDrawing = false;
-        }
-    });
-}
-
-document.addEventListener("DOMContentLoaded", startup);
-
-const ongoingTouches = [];
-
-function handleStart(evt) {
-    evt.preventDefault();
-    const touches = evt.changedTouches;
-    offsetX = canvas.getBoundingClientRect().left;
-    offsetY = canvas.getBoundingClientRect().top;
-    for (let i = 0; i < touches.length; i++) {
-        ongoingTouches.push(copyTouch(touches[i]));
+        /* A tap without movement should still leave a dot. */
+        ctx.lineTo(p.x + 0.01, p.y);
+        ctx.stroke();
     }
-}
 
-function handleMove(evt) {
-    evt.preventDefault();
-    const touches = evt.changedTouches;
-    for (let i = 0; i < touches.length; i++) {
-        const color = document.getElementById('selColor').value;
-        const idx = ongoingTouchIndexById(touches[i].identifier);
-        if (idx >= 0) {
-            context.beginPath();
-            context.moveTo(ongoingTouches[idx].clientX - offsetX, ongoingTouches[idx].clientY - offsetY);
-            context.lineTo(touches[i].clientX - offsetX, touches[i].clientY - offsetY);
-            context.lineWidth = document.getElementById('selWidth').value;
-            context.strokeStyle = color;
-            context.lineJoin = "round";
-            context.closePath();
-            context.stroke();
-            ongoingTouches.splice(idx, 1, copyTouch(touches[i]));  // swap in the new touch record
-        }
+    function move(event) {
+        if (!drawing) return;
+        event.preventDefault();
+        var p = pos(event);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
     }
-}
 
-function handleEnd(evt) {
-    evt.preventDefault();
-    const touches = evt.changedTouches;
-    for (let i = 0; i < touches.length; i++) {
-        const color = document.getElementById('selColor').value;
-        let idx = ongoingTouchIndexById(touches[i].identifier);
-        if (idx >= 0) {
-            context.lineWidth = document.getElementById('selWidth').value;
-            context.fillStyle = color;
-            ongoingTouches.splice(idx, 1);  // remove it; we're done
-        }
+    function stop(event) {
+        if (!drawing) return;
+        drawing = false;
+        try { canvas.releasePointerCapture(event.pointerId); } catch (e) { /* already released */ }
+        ctx.closePath();
     }
-}
 
-function handleCancel(evt) {
-    evt.preventDefault();
-    const touches = evt.changedTouches;
-    for (let i = 0; i < touches.length; i++) {
-        let idx = ongoingTouchIndexById(touches[i].identifier);
-        ongoingTouches.splice(idx, 1);  // remove it; we're done
+    canvas.addEventListener('pointerdown', start);
+    canvas.addEventListener('pointermove', move);
+    canvas.addEventListener('pointerup', stop);
+    canvas.addEventListener('pointercancel', stop);
+    canvas.addEventListener('pointerleave', stop);
+
+    /* Colour picker ------------------------------------------------------ */
+    if (swatches) {
+        swatches.addEventListener('click', function (event) {
+            var button = event.target.closest('.swatch');
+            if (!button) return;
+            colour = button.dataset.color;
+            swatches.querySelectorAll('.swatch').forEach(function (s) {
+                s.classList.toggle('is-active', s === button);
+            });
+        });
     }
-}
 
-function copyTouch({ identifier, clientX, clientY }) {
-    return { identifier, clientX, clientY };
-}
-
-function ongoingTouchIndexById(idToFind) {
-    for (let i = 0; i < ongoingTouches.length; i++) {
-        const id = ongoingTouches[i].identifier;
-        if (id === idToFind) {
-            return i;
-        }
+    /* Undo / clear ------------------------------------------------------- */
+    var undoButton = document.getElementById('btn-undo');
+    if (undoButton) {
+        undoButton.addEventListener('click', function () {
+            var previous = undoStack.pop();
+            if (!previous) return;
+            var image = new Image();
+            image.onload = function () {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(image, 0, 0);
+            };
+            image.src = previous;
+        });
     }
-    return -1;    // not found
-}
 
-function drawLine(context, x1, y1, x2, y2) {
-    context.beginPath();
-    context.strokeStyle = document.getElementById('selColor').value;
-    context.lineWidth = document.getElementById('selWidth').value;
-    context.lineJoin = "round";
-    context.moveTo(x1, y1);
-    context.lineTo(x2, y2);
-    context.closePath();
-    context.stroke();
-}
-
-function clearArea() {
-    var m = confirm("Möchten Sie wirklich die Zeichnung löschen?");
-    if (m) {
-        context.setTransform(1, 0, 0, 1, 0, 0);
-        context.clearRect(0, 0, context.canvas.width, context.canvas.height);
-        context.fillStyle = "white";
-        context.fillRect(0, 0, canvas.width, canvas.height);
+    var clearButton = document.getElementById('btn-clear');
+    if (clearButton) {
+        clearButton.addEventListener('click', function () {
+            if (!window.confirm('Möchten Sie die Zeichnung wirklich löschen?')) return;
+            snapshot();
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            fill();
+        });
     }
-}
 
-function save() {
-    //document.getElementById("canvasimg").style.border = "2px solid";
-    var dataURL = canvas.toDataURL();
-    document.getElementById("task_draw_base64Data").value = dataURL;
-    //document.getElementById('img64-form').submit();
+    /* Fullscreen --------------------------------------------------------- */
+    var fullscreenButton = document.getElementById('btn-fullscreen');
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener('click', function () {
+            var wrap = document.getElementById('canvas-wrap');
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else if (wrap && wrap.requestFullscreen) {
+                wrap.requestFullscreen();
+            }
+        });
+    }
 
-    console.log(document.getElementById("task_draw_base64Data").value);
-    //document.getElementById("canvasimg").src = dataURL;
-    //document.getElementById("canvasimg").style.display = "inline";
-}
+    /* Serialise on submit ------------------------------------------------ */
+    if (form && target) {
+        form.addEventListener('submit', function () {
+            target.value = canvas.toDataURL('image/png');
+        });
+    }
+})();

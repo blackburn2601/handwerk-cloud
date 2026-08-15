@@ -8,8 +8,12 @@
 /vendor/
 ###< symfony/framework-bundle ###
 
+# Auto-generated IDE helper, rebuilt on every cache warmup.
+/config/reference.php
+
 ###> phpunit/phpunit ###
 /phpunit.xml
+.phpunit.cache/
 .phpunit.result.cache
 /tests/coverage/
 ###< phpunit/phpunit ###

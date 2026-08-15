@@ -1,38 +1,48 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}Offer{% endblock %}
+{% block title %}Angebot {{ offer.id }} · HandwerkCloud{% endblock %}
 
 {% block body %}
-    <h1>Offer</h1>
+    <a class="back-link" href="{{ path('app_offer_index') }}">{{ ui.icon('arrow-left', 15) }} Zurück zur Übersicht</a>
 
-    <table class="table table-bordered table-striped">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ offer.id }}</td>
-            </tr>
-            <tr>
-                <th>Comment</th>
-                <td>{{ offer.comment }}</td>
-            </tr>
-            <tr>
-                <th>Textarea</th>
-                <td>{{ offer.textarea }}</td>
-            </tr>
-            <tr>
-                <th>OfferDate</th>
-                <td>{{ offer.offerDate ? offer.offerDate|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>TermDate</th>
-                <td>{{ offer.termDate ? offer.termDate|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('file', 20) }}</span>
+            <div>
+                <h1>Angebot {{ offer.id }}</h1>
+                <div class="page-sub">{{ offer.comment ?: 'Ohne Anmerkung' }}</div>
+            </div>
+        </div>
+        <div class="page-actions">
+            <a class="btn btn-primary" href="{{ path('app_offer_edit', {'id': offer.id}) }}">{{ ui.icon('pencil') }} Bearbeiten</a>
+        </div>
+    </div>
 
-    <a href="{{ path('app_offer_index') }}">back to list</a>
-
-    <a href="{{ path('app_offer_edit', {'id': offer.id}) }}">edit</a>
-
-    {{ include('offer/_delete_form.html.twig') }}
+    <div class="card">
+        <div class="card-body">
+            <div class="form-grid">
+                <div class="field">
+                    <span class="form-label">Kunde</span>
+                    <div>{% if offer.customer %}{{ offer.customer.firstname }} {{ offer.customer.surname }}{% else %}—{% endif %}</div>
+                </div>
+                <div class="field">
+                    <span class="form-label">Termin</span>
+                    <div>{{ offer.termDate ? offer.termDate|date('d.m.Y H:i') : '—' }}</div>
+                </div>
+                <div class="field">
+                    <span class="form-label">Angebotsdatum</span>
+                    <div>{{ offer.offerDate ? offer.offerDate|date('d.m.Y H:i') : '—' }}</div>
+                </div>
+                <div class="field">
+                    <span class="form-label">Erstellt</span>
+                    <div>{{ offer.created ? offer.created|date('d.m.Y') : '—' }}</div>
+                </div>
+            </div>
+            <div class="field">
+                <span class="form-label">Freitext</span>
+                <div>{{ offer.textarea|nl2br ?: '—' }}</div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

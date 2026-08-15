@@ -19,10 +19,48 @@ class AuthorizationTest extends DatabaseTestCase
 
     public function testLoginPageIsPublic(): void
     {
-        $this->client->request('GET', '/login');
+        $crawler = $this->client->request('GET', '/login');
 
         self::assertResponseIsSuccessful();
-        self::assertSelectorTextContains('h1', 'HANDWERKCLOUD');
+        self::assertSelectorTextContains('h1', 'HandwerkCloud');
+        self::assertCount(1, $crawler->filter('input[name="password"]'));
+        // A session-backed CSRF token, so the form works without JavaScript.
+        self::assertCount(1, $crawler->filter('input[name="_csrf_token"]'));
+    }
+
+    /**
+     * Drives the real login form rather than the loginUser() shortcut, so the
+     * CSRF token and authenticator are actually exercised.
+     */
+    public function testUserCanLogInThroughTheForm(): void
+    {
+        $this->createUser('fitter@example.test', ['ROLE_USER'], 'test1234');
+
+        $crawler = $this->client->request('GET', '/login');
+        $this->client->submit($crawler->selectButton('Anmelden')->form([
+            'email' => 'fitter@example.test',
+            'password' => 'test1234',
+        ]));
+
+        self::assertResponseRedirects('/');
+        $this->client->followRedirect();
+        self::assertResponseIsSuccessful();
+    }
+
+    public function testLoginFailsWithAWrongPassword(): void
+    {
+        $this->createUser('fitter@example.test', ['ROLE_USER'], 'test1234');
+
+        $crawler = $this->client->request('GET', '/login');
+        $this->client->submit($crawler->selectButton('Anmelden')->form([
+            'email' => 'fitter@example.test',
+            'password' => 'wrong-password',
+        ]));
+
+        self::assertResponseRedirects('/login');
+        $crawler = $this->client->followRedirect();
+        // Framework message, translated because default_locale is de.
+        self::assertStringContainsString('Fehlerhafte Zugangsdaten', $crawler->text());
     }
 
     public function testUserCannotEditAnotherUsersCustomer(): void

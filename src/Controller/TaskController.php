@@ -47,7 +47,7 @@ class TaskController extends AbstractController
             return $this->redirectToRoute('app_task_edit', ['id' => $task->getId()], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('task/edit.html.twig', [
+        return $this->render('task/edit.html.twig', [
             'task' => $task,
             'form' => $form,
         ]);

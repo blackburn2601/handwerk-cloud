@@ -9,9 +9,9 @@ trade business from customer record to quote to scheduled job, with site photos 
 touch-drawn sketches attached along the way.
 
 [![CI](https://github.com/blackburn2601/handwerk-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/blackburn2601/handwerk-cloud/actions/workflows/ci.yml)
-![PHP](https://img.shields.io/badge/PHP-8.1%20%7C%208.2-777bb4)
-![Symfony](https://img.shields.io/badge/Symfony-6.2-000000)
-![Doctrine](https://img.shields.io/badge/Doctrine%20ORM-2.x-fc6a31)
+![PHP](https://img.shields.io/badge/PHP-8.2%20|%208.3%20|%208.4-777bb4)
+![Symfony](https://img.shields.io/badge/Symfony-7.4-000000)
+![Doctrine](https://img.shields.io/badge/Doctrine%20ORM-3.x-fc6a31)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 </div>
@@ -38,9 +38,11 @@ The interface is entirely in German, because its users are.
 |  |  |
 |:--:|:--:|
 | ![Login](docs/screenshots/login.png) | ![Dashboard](docs/screenshots/dashboard.png) |
-| **Login** | **Dashboard** — scoped counts per user |
-| ![Customers](docs/screenshots/customers.png) | ![Offer](docs/screenshots/offer-edit.png) |
-| **Kunden** — customer list | **Angebot** — quote with media and one-click job creation |
+| **Login** | **Dashboard** — counts scoped to the signed-in user |
+| ![Customers](docs/screenshots/customers.png) | ![Offers](docs/screenshots/offers.png) |
+| **Kunden** — customer list | **Angebote** — quotes with job status |
+| ![Offer](docs/screenshots/offer-edit.png) | ![Tasks](docs/screenshots/tasks.png) |
+| **Angebot** — quote with media and one-click job creation | **Aufträge** — jobs with attached media |
 
 <div align="center">
 <img src="docs/screenshots/drawing.png" alt="Canvas sketch pad" width="70%">
@@ -61,13 +63,13 @@ The interface is entirely in German, because its users are.
 
 | | |
 |---|---|
-| Runtime | PHP 8.1 / 8.2 |
-| Framework | Symfony 6.2 (Twig, Forms, Security, Validator, Messenger) |
-| Persistence | Doctrine ORM 2.x, MySQL 8 |
-| Admin | EasyAdmin 4 |
-| Frontend | Twig + SB Admin 2 (Bootstrap 4), vanilla JS canvas — no build step |
-| Tests | PHPUnit 9, Symfony BrowserKit |
-| CI | GitHub Actions — lint, container/Twig/YAML validation, tests on 8.1 + 8.2 |
+| Runtime | PHP 8.2 – 8.4 |
+| Framework | Symfony 7.4 (Twig, Forms, Security, Validator) |
+| Persistence | Doctrine ORM 3.x, MySQL 8 |
+| Frontend | Twig + a hand-written CSS design system, vanilla JS — no framework, no build step |
+| Icons | Inline SVG, no icon font |
+| Tests | PHPUnit 11, Symfony BrowserKit |
+| CI | GitHub Actions — lint, container/Twig/YAML validation, tests on 8.2 / 8.3 / 8.4 |
 
 ## Domain model
 
@@ -98,12 +100,14 @@ If you are reading the code to judge it, these are the parts worth your time:
   handing them to GD.
 - **[`TaskImageUploader`](src/Service/TaskImageUploader.php)** — keeps the offer/task media
   relations in sync, and is the only place upload naming and MIME checks happen.
-- **[`public/js/TaskDraw.js`](public/js/TaskDraw.js)** — the sketch pad; separate mouse and
-  `touchstart`/`touchmove` paths so a stylus behaves the same as a mouse.
+- **[`public/js/TaskDraw.js`](public/js/TaskDraw.js)** — the sketch pad. Pointer Events give
+  mouse, touch and stylus a single code path, with undo and a colour picker on top.
+- **[`public/css/app.css`](public/css/app.css)** — the design system: custom properties for the
+  palette (taken from the logo), then components. No framework underneath it.
 
 ## Quick start
 
-Requires PHP ≥ 8.1 with `gd`, `zip`, `intl` and `pdo_mysql`, plus Composer and Docker.
+Requires PHP ≥ 8.2 with `gd`, `zip`, `intl` and `pdo_mysql`, plus Composer and Docker.
 
 ```bash
 git clone git@github.com:blackburn2601/handwerk-cloud.git && cd handwerk-cloud
@@ -132,7 +136,7 @@ two accounts.
 bin/console doctrine:database:create --env=test
 bin/console doctrine:schema:create --env=test
 
-vendor/bin/phpunit                  # 23 tests
+vendor/bin/phpunit                  # 25 tests
 vendor/bin/phpunit --testsuite unit # voter + canvas rendering, no database
 ```
 
@@ -145,13 +149,19 @@ user's record gets a 403, not their data).
 ```
 src/
 ├── Controller/         thin controllers, one per aggregate
-│   └── Admin/          EasyAdmin dashboard + user CRUD
 ├── Entity/             Doctrine entities with validation constraints
 ├── Repository/         queries, incl. findByOwner() scoping
 ├── Form/               Symfony form types (German labels)
 ├── Security/           form login authenticator + EntityOwnerVoter
 ├── Service/            upload handling, canvas rendering, zip export
-└── DataFixtures/       demo data
+└── DataFixtures/       demo data, incl. a generated sample sketch
+templates/
+├── _icons.html.twig    inline SVG icon macro
+├── form/theme.html.twig  form markup the stylesheet expects
+└── …                   one directory per aggregate
+public/
+├── css/app.css         the design system
+└── js/                 app.js (shell) + TaskDraw.js (sketch pad)
 tests/
 ├── Unit/               voter and renderer, no I/O
 └── Functional/         real requests against a real database
@@ -159,11 +169,14 @@ tests/
 
 ## Notes
 
-The stack is deliberately period-accurate to when the application was written (Symfony 6.2,
-Doctrine ORM 2.x). Were this going back into production it would want a Symfony LTS upgrade,
-`sensio/framework-extra-bundle` removed (abandoned upstream), and the SB Admin 2 theme replaced
-with an asset pipeline. Those are upgrade decisions for a maintained deployment rather than
-changes to what this repository demonstrates.
+The frontend is deliberately dependency-free: no Bootstrap, no jQuery, no icon
+font, no bundler. `public/css/app.css` is a small design system of custom
+properties, and icons are inline SVG rendered by a Twig macro. That keeps the
+repository readable and the payload small, at the cost of writing the components
+by hand.
+
+Possible next steps: a dark theme (the palette is already tokenised), Turbo for
+snappier navigation, and thumbnailing for uploaded photos.
 
 ## License
 

@@ -1,9 +1,27 @@
+{% import '_icons.html.twig' as ui %}
+
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn btn-success btn-icon-split">
-        <span class="icon text-white-50">
-            <i class="fas fa-check"></i>
-        </span>
-        <span class="text">{{ button_label|default('Speichern') }}</span>
-    </button>
+    {{ form_errors(form) }}
+
+    <div class="form-grid">
+        {{ form_row(form.title) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.firstname) }}
+        {{ form_row(form.surname) }}
+        {{ form_row(form.street) }}
+        {{ form_row(form.housenumber) }}
+        {{ form_row(form.plz) }}
+        {{ form_row(form.city) }}
+        {{ form_row(form.phone) }}
+        {{ form_row(form.mobilenumber) }}
+    </div>
+
+    <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{{ ui.icon('check') }} {{ button_label|default('Speichern') }}</button>
+        <a class="btn btn-secondary" href="{{ path('app_customer_index') }}">Abbrechen</a>
+        {% if delete_form is defined and delete_form %}
+            <span class="spacer"></span>
+            {{ include('customer/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
 {{ form_end(form) }}

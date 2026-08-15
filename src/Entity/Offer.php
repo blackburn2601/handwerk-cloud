@@ -52,7 +52,6 @@ class Offer
 
     public function __construct()
     {
-        $this->offerDraws = new ArrayCollection();
         $this->taskDraws = new ArrayCollection();
         $this->taskImages = new ArrayCollection();
     }

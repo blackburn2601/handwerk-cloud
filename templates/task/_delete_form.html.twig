@@ -1,9 +1,9 @@
-<form method="post" action="{{ path('app_task_index', {'id': task.id}) }}" onsubmit="return confirm('Möchten Sie den Auftrag wirklich löschen?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ task.id) }}">
-    <button class="btn btn-danger btn-icon-split">
-        <span class="icon text-white-50">
-            <i class="fas fa-trash"></i>
-        </span>
-        <span class="text">Löschen</span>
-    </button>
-</form>
+{% import '_icons.html.twig' as ui %}
+
+{% if task.offer %}
+    <form method="post" action="{{ path('app_offer_delete', {'id': task.offer.id}) }}"
+          data-confirm="Damit werden Angebot und Auftrag gelöscht. Fortfahren?">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ task.offer.id) }}">
+        <button class="btn btn-danger" type="submit">{{ ui.icon('trash') }} Löschen</button>
+    </form>
+{% endif %}

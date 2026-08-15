@@ -1,6 +1,9 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
 
+    form_themes:
+        - 'form/theme.html.twig'
+
     globals:
         taskdrawings_dir: 'img/drawings/'
         taskimages_dir: 'img/images/'

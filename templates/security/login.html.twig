@@ -1,100 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="de">
 <head>
-
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-
-    <title>HandwerkCloud</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>Anmelden · HandwerkCloud</title>
     <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-    <link
-            href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-            rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
-
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 </head>
+<body>
+{% import '_icons.html.twig' as ui %}
 
-<body class="bg-gradient-primary">
+<div class="auth">
+    <aside class="auth-aside">
+        <img src="{{ asset('img/logo.svg') }}" alt="">
+        <h1>HandwerkCloud</h1>
+        <p>Kunden, Angebote und Aufträge — vom Büro bis auf die Baustelle.</p>
+        <ul class="auth-points">
+            <li>{{ ui.icon('file') }} Angebote per Klick in Aufträge überführen</li>
+            <li>{{ ui.icon('image') }} Fotos direkt vom Einsatzort</li>
+            <li>{{ ui.icon('brush') }} Skizzen mit Finger oder Stift</li>
+        </ul>
+    </aside>
 
-<div class="container">
+    <main class="auth-main">
+        <div class="auth-form">
+            <h2>Anmelden</h2>
+            <p class="lede">Willkommen zurück. Bitte melden Sie sich an.</p>
 
-    <!-- Outer Row -->
-    <div class="row justify-content-center">
-
-        <div class="col-xl-10 col-lg-12 col-md-9">
-
-            <div class="card o-hidden border-1 shadow-lg my-5">
-                <div class="card-body p-0">
-                    <!-- Nested Row within Card Body -->
-                    <div class="row">
-                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
-                        <div class="col-lg-6">
-                            <div class="p-5">
-                                <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">HANDWERKCLOUD</h1>
-                                </div>
-                                <form class="user" method="POST">
-                                    {% if error %}
-                                        <div class="card mb-4 py-3 border-bottom-danger">
-                                            <div class="card-body">
-                                                {{ error.messageKey|trans(error.messageData, 'security') }}
-                                            </div>
-                                        </div>
-                                    {% endif %}
-                                    {% if app.user %}
-                                        <div class="mb-3">
-                                            Sie sind angemeldet als {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Abmelden</a>
-                                        </div>
-                                    {% endif %}
-                                    <div class="form-group">
-                                        <input type="email" value="{{ last_username }}" class="form-control form-control-user"
-                                               name="email" id="inputEmail" aria-describedby="emailHelp"
-                                               placeholder="E-Mail Adresse" required autofocus>
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" class="form-control form-control-user"
-                                               name="password" id="inputPassword" placeholder="Passwort" autocomplete="current-password" required>
-                                    </div>
-                                    <input type="hidden" name="_csrf_token"
-                                           value="{{ csrf_token('authenticate') }}"
-                                    >
-
-                                    <button class="btn btn-primary btn-user btn-block" type="submit">
-                                        Anmelden
-                                    </button>
-
-                                </form>
-                            </div>
-                        </div>
+            <form method="post">
+                {% if error %}
+                    <div class="flash is-danger" role="alert" style="margin-bottom:1rem">
+                        {{ ui.icon('alert') }}
+                        <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
                     </div>
+                {% endif %}
+
+                <div class="field">
+                    <label for="inputEmail">E-Mail</label>
+                    <input type="email" id="inputEmail" name="email" value="{{ last_username }}"
+                           autocomplete="email" required autofocus placeholder="name@betrieb.de">
                 </div>
+
+                <div class="field">
+                    <label for="inputPassword">Passwort</label>
+                    <input type="password" id="inputPassword" name="password"
+                           autocomplete="current-password" required placeholder="••••••••">
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="btn btn-primary" type="submit">Anmelden</button>
+            </form>
+
+            <div class="demo-hint">
+                <strong>Demo-Zugänge</strong><br>
+                Administrator: <code>admin@handwerkcloud.test</code><br>
+                Monteur: <code>monteur@handwerkcloud.test</code><br>
+                Passwort jeweils: <code>demo1234</code>
             </div>
-
         </div>
-
-    </div>
-
+    </main>
 </div>
-
-<!-- Bootstrap core JavaScript-->
-<script src="vendor/jquery/jquery.min.js"></script>
-<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-<!-- Core plugin JavaScript-->
-<script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-<!-- Custom scripts for all pages-->
-<script src="js/sb-admin-2.min.js"></script>
-
 </body>
-
 </html>

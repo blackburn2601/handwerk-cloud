@@ -1,42 +1,75 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}Offer index{% endblock %}
+{% block title %}Angebote · HandwerkCloud{% endblock %}
 
 {% block body %}
-    <h1><i class="fas fa-file-invoice"></i> Angebote</h1>
-    <a href="{{ path('app_offer_new') }}" class="btn btn-primary">
-        <span class="text">+</span>
-    </a>
-    <br>
-    <br>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Anmerkung</th>
-                <th>Kunde</th>
-                <th>Angebot Datum</th>
-                <th>Termin</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for offer in offers %}
-            <tr>
-                <td>{{ offer.id }}</td>
-                <td>{{ offer.comment }}</td>
-                <td>{{ offer.customer }}</td>
-                <td>{{ offer.offerDate ? offer.offerDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ offer.termDate ? offer.termDate|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a class="btn btn-info btn-circle btn-sm" href="{{ path('app_offer_edit', {'id': offer.id}) }}"><i class="fas fa-info-circle"></i></a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">Keine Einträge gefunden</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('file', 20) }}</span>
+            <div>
+                <h1>Angebote</h1>
+                <div class="page-sub">{{ offers|length }} {{ offers|length == 1 ? 'Eintrag' : 'Einträge' }}</div>
+            </div>
+        </div>
+        <div class="page-actions">
+            <a class="btn btn-primary" href="{{ path('app_offer_new') }}">{{ ui.icon('plus') }} Angebot erstellen</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body is-flush">
+            {% if offers is empty %}
+                <div class="empty">
+                    {{ ui.icon('file', 40) }}
+                    <p>Noch keine Angebote erstellt.</p>
+                    <a class="btn btn-primary" href="{{ path('app_offer_new') }}">{{ ui.icon('plus') }} Erstes Angebot erstellen</a>
+                </div>
+            {% else %}
+                <div class="table-wrap">
+                    <table class="data">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Anmerkung</th>
+                            <th>Kunde</th>
+                            <th>Angebotsdatum</th>
+                            <th>Termin</th>
+                            <th>Status</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for offer in offers %}
+                            <tr>
+                                <td class="id-cell">{{ offer.id }}</td>
+                                <td class="is-strong">{{ offer.comment ?: '—' }}</td>
+                                <td>
+                                    {% if offer.customer %}
+                                        {{ offer.customer.firstname }} {{ offer.customer.surname }}
+                                        <div class="muted" style="font-size:.8rem">{{ offer.customer.plz }} {{ offer.customer.city }}</div>
+                                    {% else %}<span class="muted">—</span>{% endif %}
+                                </td>
+                                <td>{{ offer.offerDate ? offer.offerDate|date('d.m.Y') : '—' }}</td>
+                                <td>{{ offer.termDate ? offer.termDate|date('d.m.Y') : '—' }}</td>
+                                <td>
+                                    {% if offer.task %}
+                                        <span class="badge is-green">{{ ui.icon('check', 13) }} Auftrag erstellt</span>
+                                    {% else %}
+                                        <span class="badge">offen</span>
+                                    {% endif %}
+                                </td>
+                                <td class="is-actions">
+                                    <a class="btn btn-secondary btn-sm" href="{{ path('app_offer_edit', {'id': offer.id}) }}">
+                                        {{ ui.icon('pencil', 15) }} Bearbeiten
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}

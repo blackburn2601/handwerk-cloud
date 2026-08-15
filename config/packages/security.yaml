@@ -19,24 +19,15 @@ security:
             custom_authenticator: App\Security\SecurityAuthenticator
             logout:
                 path: app_logout
-                # where to redirect after logout
                 target: app_login
 
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
-
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
+    # Coarse, route-level rules only. Record-level access is decided by
+    # App\Security\Voter\EntityOwnerVoter.
     # Only the *first* matching rule applies, so the catch-all must come last.
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/user, roles: ROLE_ADMIN }
-        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/, roles: ROLE_USER }
-
 
 
 when@test:

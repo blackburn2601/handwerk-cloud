@@ -1,40 +1,66 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}Zeichnung{% endblock %}
+{% block title %}Zeichnung · HandwerkCloud{% endblock %}
 
 {% block body %}
-    {{ form_start(form) }}
-    <div class="my-custom-class-for-errors">
-        {{ form_errors(form) }}
+    <a class="back-link" href="{{ path('app_offer_edit', {'id': offer.id}) }}">
+        {{ ui.icon('arrow-left', 15) }} Zurück zum Angebot
+    </a>
+
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('brush', 20) }}</span>
+            <div>
+                <h1>Zeichnung</h1>
+                <div class="page-sub">Mit Maus, Finger oder Stift skizzieren</div>
+            </div>
+        </div>
+        <div class="page-actions">
+            <button class="btn btn-secondary" type="button" id="btn-fullscreen">Vollbild</button>
+            <button class="btn btn-primary" type="submit" form="sketch-form" id="btn-save">
+                {{ ui.icon('check') }} Speichern
+            </button>
+        </div>
     </div>
-    <div style="margin-bottom: 5px; margin-top: 5px;">
-        <button class="btn btn-success btn-icon-split">
-                <span class="icon text-white-50">
-                    <i class="fas fa-check"></i>
-                </span>
-            <span class="text" onclick="save()">{{ button_label|default('Speichern') }}</span>
-        </button>
-        <a class="btn btn-secondary" id="openFullScreen" onclick="openFullscreen();">Vollbild</a>
-        <a class="btn btn-secondary" onclick="closeFullscreen();">Vollbild schließen</a>
+
+    <div class="card">
+        <div class="sketch-toolbar">
+            <div class="group">
+                <label for="selWidth">Linienbreite</label>
+                <select id="selWidth">
+                    <option value="2" selected>fein</option>
+                    <option value="4">mittel</option>
+                    <option value="8">breit</option>
+                    <option value="14">sehr breit</option>
+                </select>
+            </div>
+            <div class="group">
+                <label>Farbe</label>
+                <div class="swatches" id="swatches">
+                    <button type="button" class="swatch is-active" data-color="#0f172a" style="background:#0f172a" aria-label="schwarz"></button>
+                    <button type="button" class="swatch" data-color="#224abe" style="background:#224abe" aria-label="blau"></button>
+                    <button type="button" class="swatch" data-color="#dc2626" style="background:#dc2626" aria-label="rot"></button>
+                    <button type="button" class="swatch" data-color="#059669" style="background:#059669" aria-label="grün"></button>
+                    <button type="button" class="swatch" data-color="#d97706" style="background:#d97706" aria-label="orange"></button>
+                    <button type="button" class="swatch" data-color="#94a3b8" style="background:#94a3b8" aria-label="grau"></button>
+                </div>
+            </div>
+            <div class="spacer"></div>
+            <button class="btn btn-secondary btn-sm" type="button" id="btn-undo">Rückgängig</button>
+            <button class="btn btn-danger btn-sm" type="button" id="btn-clear">{{ ui.icon('trash', 15) }} Leeren</button>
+        </div>
+
+        <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="canvas" width="1400" height="760"></canvas>
+        </div>
     </div>
+
+    {{ form_start(form, {'attr': {'id': 'sketch-form'}}) }}
+        {{ form_widget(form.base64Data, {'attr': {'class': 'task_draw_base64'}}) }}
     {{ form_end(form) }}
-    <div id="canvas_div" style="overflow-x: auto;">
-        <canvas id="canvas" height="700" width="1170" style="border:2px solid; background-color: white; border-radius: 2px;"></canvas>
-        <button class="btn btn-danger" onclick="javascript:clearArea();return false;">Zeichnung löschen</button>
-        Linienbreite : <select class="form-select" id="selWidth">
-            <option value="2" selected="selected">2</option>
-            <option value="6">6</option>
-            <option value="8">8</option>
-        </select>
-        Farbe : <select class="form-select" id="selColor">
-            <option value="black" selected="selected">schwarz</option>
-            <option value="blue">blau</option>
-            <option value="red">rot</option>
-            <option value="green">grün</option>
-            <option value="yellow">gelb</option>
-            <option value="gray">grau</option>
-        </select>
-    </div>
-    </br>
+{% endblock %}
+
+{% block javascripts %}
     <script src="{{ asset('js/TaskDraw.js') }}"></script>
 {% endblock %}

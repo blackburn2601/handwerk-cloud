@@ -1,65 +1,24 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}Edit Customer{% endblock %}
+{% block title %}{{ customer.firstname }} {{ customer.surname }} · HandwerkCloud{% endblock %}
 
 {% block body %}
-    <h1><i class="fas fa-users"></i> Kunde bearbeiten</h1>
+    <a class="back-link" href="{{ path('app_customer_index') }}">{{ ui.icon('arrow-left', 15) }} Zurück zur Übersicht</a>
 
-    {{ form_start(form) }}
-    <div class="my-custom-class-for-errors">
-        {{ form_errors(form) }}
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('users', 20) }}</span>
+            <div>
+                <h1>{{ customer.firstname }} {{ customer.surname }}</h1>
+                <div class="page-sub">{{ customer.plz }} {{ customer.city }}</div>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.firstname, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.surname, {'attr': {'class': 'form-control border-1 small'}}) }}
+    <div class="card">
+        <div class="card-body">
+            {{ include('customer/_form.html.twig', {'delete_form': true}) }}
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.title, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.email, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.street, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.housenumber, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.plz, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.city, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
-            {{ form_row(form.phone, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-        <div class="col">
-            {{ form_row(form.mobilenumber, {'attr': {'class': 'form-control border-1 small'}}) }}
-        </div>
-    </div>
-    <br>
-    <button class="btn btn-success btn-icon-split">
-        <span class="icon text-white-50">
-            <i class="fas fa-check"></i>
-        </span>
-        <span class="text">{{ button_label|default('Speichern') }}</span>
-    </button>
-    {{ form_end(form) }}
-    <br>
-    {{ include('customer/_delete_form.html.twig') }}
-    <br>
-    <a href="{{ path('app_customer_index') }}">Zurück zur Übersicht</a>
 {% endblock %}

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-HandwerkCloud — a Symfony 6.2 field-service app (German UI) for trade businesses: **Kunden**
+HandwerkCloud — a Symfony 7.4 field-service app (German UI) for trade businesses: **Kunden**
 (customers) → **Angebote** (offers) → **Aufträge** (tasks), with photo uploads and touch/stylus
 sketches drawn on an HTML canvas.
 
@@ -21,7 +21,7 @@ bin/console doctrine:migrations:migrate -n
 bin/console doctrine:fixtures:load -n         # demo data; admin@handwerkcloud.test / demo1234
 
 symfony server:start                          # or: php -S 127.0.0.1:8000 -t public
-vendor/bin/phpunit                            # 23 tests
+vendor/bin/phpunit                            # 25 tests
 vendor/bin/phpunit --testsuite unit           # no database needed
 ```
 
@@ -29,26 +29,32 @@ Functional tests need the test database once: `bin/console doctrine:database:cre
 then `doctrine:schema:create --env=test`. Doctrine appends `_test` to the database name, so tests
 never touch dev data.
 
-### PHP 8.3+ note
+### Stack
 
-The pinned stack is Symfony 6.2 (EOL). On PHP 8.4/8.5 it boots and renders fine but floods stdout
-with `E_DEPRECATED`. Silence it for readable output:
+Symfony 7.4 / Doctrine ORM 3 / PHP 8.2+ (8.4 locally). The suite runs clean — **no deprecation
+notices**. If any appear, treat them as a regression rather than noise:
 
-```bash
-php -d error_reporting="E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED" -d display_errors=0 bin/console <cmd>
-```
+- `enable_native_lazy_objects: true` in `doctrine.yaml` replaces generated proxies.
+- `imagedestroy()` is a no-op since PHP 8.0 and deprecated in 8.5 — do not reintroduce it.
 
-CI pins 8.1/8.2, where this is not needed. Do not "fix" these deprecations by patching vendor code
-or bumping Symfony piecemeal — the version pin is deliberate (see README *Notes*).
+Note PHP's built-in server needs a router script to serve static files alongside Symfony routes;
+`symfony server:start` handles this, plain `php -S ... public/index.php` does not.
 
-Also note PHP's built-in server needs a router script to serve static files alongside Symfony
-routes; `symfony server:start` handles this properly, plain `php -S ... public/index.php` does not.
+### CSRF
+
+`config/packages/csrf.yaml` deliberately pins **session-backed** tokens. Symfony 7.2+ defaults to
+stateless (double-submit cookie) tokens, which need JavaScript to swap a placeholder into the
+form — that silently breaks the hand-written login form, which has no JS. There is a functional
+test driving the real login form to catch this.
 
 ## Architecture
 
-Standard Symfony layout. Static assets are committed directly under `public/` (SB Admin 2
-Bootstrap theme, jQuery, FontAwesome vendored in `public/vendor/`) — there is no build step, so
-edit CSS/JS in place.
+Standard Symfony layout. **No frontend framework and no build step**: `public/css/app.css` is a
+hand-written design system (CSS custom properties for the palette, then components), and
+`public/js/app.js` holds the few behaviours needed. Icons are inline SVG via the `icon()` macro in
+`templates/_icons.html.twig` — add new ones to the `paths` map there rather than pulling in an
+icon font. Forms render through `templates/form/theme.html.twig`, which emits the `.field`
+markup the stylesheet expects.
 
 ### Domain model
 
@@ -106,9 +112,10 @@ rows at once (the uploader) use the entity manager directly. Follow whichever fi
 
 ## Conventions
 
-- **UI language is German.** Labels, buttons, flash messages and `confirm()` strings are German
-  string literals in form types and Twig. `translations/` is empty — nothing goes through the
-  translator. Keep new user-facing text German and inline.
+- **UI language is German.** Labels, buttons, flash messages and confirm prompts are German
+  string literals in form types and Twig. `translations/` is empty, but `default_locale: de` is
+  set so framework-supplied messages (security errors, validation constraints) come out German
+  too. Keep new user-facing text German and inline.
 - Route names `app_<entity>_<action>`; controllers prefixed with `#[Route('/offer')]` at class level.
 - Deletes are POST-only, CSRF-guarded with token `'delete' . $entity->getId()`.
 - Entities carry validation constraints (`#[Assert\...]`); add them there, not only in form types.

@@ -1,40 +1,55 @@
 {% extends 'base.html.twig' %}
+{% import '_icons.html.twig' as ui %}
 
-{% block title %}User index{% endblock %}
+{% block title %}Benutzer · HandwerkCloud{% endblock %}
 
 {% block body %}
-    <h1>Benutzerverwaltung</h1>
-    <a href="{{ path('app_user_new') }}" class="btn btn-primary">
-        <span class="text">+</span>
-    </a>
-    <br>
-    <br>
-    <table class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Vorname</th>
-                <th>Nachname</th>
-                <th>E-Mail</th>
-                <th>Aktionen</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.firstname }}</td>
-                <td>{{ user.surname }}</td>
-                <td>{{ user.email }}</td>
-                <td>
-                    <a class="btn btn-info btn-circle btn-sm" href="{{ path('app_user_edit', {'id': user.id}) }}"><i class="fas fa-info-circle"></i></a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">Keine Einträge gefunden</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="page-head">
+        <div class="page-title">
+            <span class="page-title-icon">{{ ui.icon('user-cog', 20) }}</span>
+            <div>
+                <h1>Benutzer</h1>
+                <div class="page-sub">{{ users|length }} {{ users|length == 1 ? 'Konto' : 'Konten' }}</div>
+            </div>
+        </div>
+        <div class="page-actions">
+            <a class="btn btn-primary" href="{{ path('app_user_new') }}">{{ ui.icon('plus') }} Benutzer anlegen</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body is-flush">
+            <div class="table-wrap">
+                <table class="data">
+                    <thead>
+                    <tr><th>#</th><th>Name</th><th>E-Mail</th><th>Rollen</th><th>Datensätze</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td class="id-cell">{{ user.id }}</td>
+                            <td class="is-strong">{{ user.firstname }} {{ user.surname }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                {% for role in user.roles %}
+                                    <span class="badge {{ role == 'ROLE_ADMIN' ? 'is-brand' }}">
+                                        {{ role == 'ROLE_ADMIN' ? 'Administrator' : 'Benutzer' }}
+                                    </span>
+                                {% endfor %}
+                            </td>
+                            <td class="muted" style="font-size:.82rem">
+                                {{ user.customers|length }} Kunden · {{ user.offers|length }} Angebote
+                            </td>
+                            <td class="is-actions">
+                                <a class="btn btn-secondary btn-sm" href="{{ path('app_user_edit', {'id': user.id}) }}">
+                                    {{ ui.icon('pencil', 15) }} Bearbeiten
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}
