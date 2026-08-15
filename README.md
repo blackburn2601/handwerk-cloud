@@ -8,10 +8,10 @@
 trade business from customer record to quote to scheduled job, with site photos and
 touch-drawn sketches attached along the way.
 
+[![CI](https://github.com/blackburn2601/handwerk-cloud/actions/workflows/ci.yml/badge.svg)](https://github.com/blackburn2601/handwerk-cloud/actions/workflows/ci.yml)
 ![PHP](https://img.shields.io/badge/PHP-8.1%20%7C%208.2-777bb4)
 ![Symfony](https://img.shields.io/badge/Symfony-6.2-000000)
 ![Doctrine](https://img.shields.io/badge/Doctrine%20ORM-2.x-fc6a31)
-![Tests](https://img.shields.io/badge/tests-23%20passing-3fb950)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
 </div>
@@ -106,7 +106,7 @@ If you are reading the code to judge it, these are the parts worth your time:
 Requires PHP ≥ 8.1 with `gd`, `zip`, `intl` and `pdo_mysql`, plus Composer and Docker.
 
 ```bash
-git clone <this-repo> && cd handwerk-cloud
+git clone git@github.com:blackburn2601/handwerk-cloud.git && cd handwerk-cloud
 composer install
 
 docker compose up -d                      # MySQL 8 on port 13306
