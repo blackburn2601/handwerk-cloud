@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Neuer Benutzer{% endblock %}
+
+{% block body %}
+    <h1>Neuer Benutzer</h1>
+
+    {{ form_start(form) }}
+    <div class="my-custom-class-for-errors">
+        {{ form_errors(form) }}
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.firstname, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.surname, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.email, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.password, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.roles, {'attr': {'class': 'form-control border-1 small'}}) }}
+            <p>Zum Auswählen mehrerer Benutzerrollen, "STRG" halten und mit der Maus die gewünschten Rollen wählen.</p>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-success btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-check"></i>
+        </span>
+        <span class="text">{{ button_label|default('Speichern') }}</span>
+    </button>
+    {{ form_end(form) }}
+    <br>
+    <a href="{{ path('app_user_index') }}">Abbrechen</a>
+{% endblock %}

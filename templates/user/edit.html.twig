@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block body %}
+    <h1>Benutzer bearbeiten</h1>
+
+    {{ form_start(form) }}
+
+    {% if form_errors(form) %}
+    <div class="alert alert-danger alert-dismissible fade show">
+        {{ form_errors(form) }}
+    </div>
+    {% endif %}
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.firstname, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.surname, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.email, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.password, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.roles, {'attr': {'class': 'form-control border-1 small'}}) }}
+            <p>Zum Auswählen mehrerer Benutzerrollen, "STRG" halten und mit der Maus die gewünschten Rollen wählen.</p>
+        </div>
+    </div>
+    <br>
+    <button class="btn btn-success btn-icon-split">
+        <span class="icon text-white-50">
+            <i class="fas fa-check"></i>
+        </span>
+        <span class="text">{{ button_label|default('Speichern') }}</span>
+    </button>
+    {{ form_end(form) }}
+    <br>
+    {{ include('user/_delete_form.html.twig') }}
+    <br>
+    <a href="{{ path('app_user_index') }}">Zurück zur Übersicht</a>
+{% endblock %}

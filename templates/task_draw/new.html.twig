@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Zeichnung{% endblock %}
+
+{% block body %}
+    {{ form_start(form) }}
+    <div class="my-custom-class-for-errors">
+        {{ form_errors(form) }}
+    </div>
+    <div style="margin-bottom: 5px; margin-top: 5px;">
+        <button class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                </span>
+            <span class="text" onclick="save()">{{ button_label|default('Speichern') }}</span>
+        </button>
+        <a class="btn btn-secondary" id="openFullScreen" onclick="openFullscreen();">Vollbild</a>
+        <a class="btn btn-secondary" onclick="closeFullscreen();">Vollbild schließen</a>
+    </div>
+    {{ form_end(form) }}
+    <div id="canvas_div" style="overflow-x: auto;">
+        <canvas id="canvas" height="700" width="1170" style="border:2px solid; background-color: white; border-radius: 2px;"></canvas>
+        <button class="btn btn-danger" onclick="javascript:clearArea();return false;">Zeichnung löschen</button>
+        Linienbreite : <select class="form-select" id="selWidth">
+            <option value="2" selected="selected">2</option>
+            <option value="6">6</option>
+            <option value="8">8</option>
+        </select>
+        Farbe : <select class="form-select" id="selColor">
+            <option value="black" selected="selected">schwarz</option>
+            <option value="blue">blau</option>
+            <option value="red">rot</option>
+            <option value="green">grün</option>
+            <option value="yellow">gelb</option>
+            <option value="gray">grau</option>
+        </select>
+    </div>
+    </br>
+    <script src="{{ asset('js/TaskDraw.js') }}"></script>
+{% endblock %}

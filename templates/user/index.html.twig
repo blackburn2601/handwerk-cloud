@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User index{% endblock %}
+
+{% block body %}
+    <h1>Benutzerverwaltung</h1>
+    <a href="{{ path('app_user_new') }}" class="btn btn-primary">
+        <span class="text">+</span>
+    </a>
+    <br>
+    <br>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Vorname</th>
+                <th>Nachname</th>
+                <th>E-Mail</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.firstname }}</td>
+                <td>{{ user.surname }}</td>
+                <td>{{ user.email }}</td>
+                <td>
+                    <a class="btn btn-info btn-circle btn-sm" href="{{ path('app_user_edit', {'id': user.id}) }}"><i class="fas fa-info-circle"></i></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Keine Einträge gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,23 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+parameters:
+    # Where generated drawings and uploaded photos are written. Both live under
+    # public/ so they can be served directly; their contents are gitignored.
+    app.task_drawings_dir: '%kernel.project_dir%/public/img/drawings'
+    app.task_images_dir:   '%kernel.project_dir%/public/img/images'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        bind:
+            string $taskDrawingsDir: '%app.task_drawings_dir%'
+            string $taskImagesDir: '%app.task_images_dir%'
+
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'

@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offer index{% endblock %}
+
+{% block body %}
+    <h1><i class="fas fa-file-invoice"></i> Angebote</h1>
+    <a href="{{ path('app_offer_new') }}" class="btn btn-primary">
+        <span class="text">+</span>
+    </a>
+    <br>
+    <br>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Anmerkung</th>
+                <th>Kunde</th>
+                <th>Angebot Datum</th>
+                <th>Termin</th>
+                <th>Aktionen</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for offer in offers %}
+            <tr>
+                <td>{{ offer.id }}</td>
+                <td>{{ offer.comment }}</td>
+                <td>{{ offer.customer }}</td>
+                <td>{{ offer.offerDate ? offer.offerDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ offer.termDate ? offer.termDate|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a class="btn btn-info btn-circle btn-sm" href="{{ path('app_offer_edit', {'id': offer.id}) }}"><i class="fas fa-info-circle"></i></a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">Keine Einträge gefunden</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

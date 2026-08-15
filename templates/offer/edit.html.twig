@@ -1,0 +1,112 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Angebot bearbeiten{% endblock %}
+
+{% block body %}
+    <h1><i class="fas fa-file-invoice"></i> Angebot bearbeiten</h1>
+    <a href="{{ path('app_offer_index') }}">Zurück zur Übersicht</a>
+    {{ form_start(form) }}
+    <div class="my-custom-class-for-errors">
+        {{ form_errors(form) }}
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.customer, {'attr': {'class': 'form-control form-select'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.comment, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.taskImages, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.offerDate, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.termDate, {'attr': {'class': 'form-control border-1 small'}}) }}
+        </div>
+    </div>
+    <div class="row">
+       <div class="col">
+           {{ form_row(form.textarea, {'attr': {'class': 'form-control border-1 small'}}) }}
+       </div>
+    </div>
+    <div class="d-flex flex-row bd-highlight mb-3">
+        <div class="p-2 bd-highlight">
+            <button class="btn btn-success btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-check"></i>
+                </span>
+                <span class="text">{{ button_label|default('Speichern') }}</span>
+            </button>
+        </div>
+        <div class="p-2 bd-highlight">
+            <a href="{{ path('app_offer_generate_task', {'id': offer.id}) }}" class="btn btn-secondary btn-icon-split">
+                <span class="icon text-white-50">
+                    <i class="fas fa-arrow-right"></i>
+                </span>
+                <span class="text">Erstelle Auftrag</span>
+            </a>
+        </div>
+        {{ form_row(form._token) }}
+    </div>
+    {{ form_end(form) }}
+    {{ include('offer/_delete_form.html.twig') }}
+    <hr>
+    <h2>Medien</h2>
+    <div class="d-flex flex-wrap">
+        {% for taskImage in offer.taskImages %}
+            <div class="p-2 bd-highlight">
+                {% if is_granted('ROLE_ADMIN') %}
+                <form action="{{ url('app_task_image_delete', {'id': taskImage.id}) }}" method="post" onsubmit="return confirm('Möchten Sie das Bild wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ taskImage.id) }}"/>
+                {% endif %}
+                    <img src="{{ asset(taskimages_dir ~ taskImage.path ) }}" alt="..." class="img-thumbnail">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <button type="submit" class="btn btn-danger btn-circle"><i class="fas fa-trash"></i></button>
+                {% endif %}
+                </form>
+            </div>
+        {% else %}
+            <div class="p-2 bd-highlight">
+                <p>Keine Dateien vorhanden</p>
+            </div>
+        {% endfor %}
+    </div>
+    <br>
+    <hr>
+    <div class="d-flex flex-row bd-highlight mb-3">
+        <div class="p-2 bd-highlight">
+            <h2>Zeichnungen</h2>
+        </div>
+        <div class="p-2 bd-highlight">
+            <a href="{{ path('app_task_draw_new', {'id': offer.id}) }}" class="btn btn-primary">
+                <span class="text">+</span>
+            </a>
+        </div>
+    </div>
+    <div class="d-flex flex-wrap">
+        {% for taskDraw in offer.taskDraws %}
+            <div class="p-2 bd-highlight">
+                {% if is_granted('ROLE_ADMIN') %}
+                <form action="{{ url('app_task_draw_delete', {'id': taskDraw.id}) }}" method="post" onsubmit="return confirm('Möchten Sie die Zeichnung wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ taskDraw.id) }}"/>
+                {% endif %}
+                    <img src="{{ asset(taskdrawings_dir ~ taskDraw.path ) }}" alt="..." class="img-thumbnail">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <button type="submit" class="btn btn-danger btn-circle"><i class="fas fa-trash"></i></button>
+                {% endif %}
+                </form>
+            </div>
+        {% else %}
+            <div class="p-2 bd-highlight">
+                <p>Keine Dateien vorhanden</p>
+            </div>
+        {% endfor %}
+    </div>
+
+{% endblock %}

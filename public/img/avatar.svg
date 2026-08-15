@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Benutzer">
+  <title>Benutzer</title>
+  <circle cx="32" cy="32" r="32" fill="#dddfeb"/>
+  <circle cx="32" cy="25" r="11" fill="#858796"/>
+  <path d="M32 39c-10.5 0-19 6.6-19 14.7A32 32 0 0 0 51 53.7C51 45.6 42.5 39 32 39Z" fill="#858796"/>
+</svg>

@@ -1,0 +1,21 @@
+services:
+  database:
+    image: mysql:8.0
+    container_name: handwerk-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: handwerk
+      MYSQL_USER: handwerk
+      MYSQL_PASSWORD: handwerk
+    ports:
+      - "13306:3306"
+    volumes:
+      - database_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  database_data:

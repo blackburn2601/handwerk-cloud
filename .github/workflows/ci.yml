@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.2']
+
+    services:
+      database:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: handwerk
+          MYSQL_USER: handwerk
+          MYSQL_PASSWORD: handwerk
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      DATABASE_URL: "mysql://handwerk:handwerk@127.0.0.1:3306/handwerk?serverVersion=8.0.32&charset=utf8mb4"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: ctype, iconv, intl, gd, zip, pdo_mysql
+          coverage: none
+
+      - name: Validate composer files
+        run: composer validate --strict
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php${{ matrix.php }}-${{ hashFiles('composer.lock') }}
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress --no-interaction
+
+      - name: Lint PHP
+        run: find src tests -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+
+      - name: Lint container
+        run: bin/console lint:container
+
+      - name: Lint Twig
+        run: bin/console lint:twig templates
+
+      - name: Lint YAML
+        run: bin/console lint:yaml config
+
+      - name: Create test database
+        run: |
+          bin/console doctrine:database:create --env=test --if-not-exists
+          bin/console doctrine:schema:create --env=test
+
+      - name: Run tests
+        run: vendor/bin/phpunit

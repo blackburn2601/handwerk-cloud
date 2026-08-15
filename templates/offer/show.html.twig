@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Offer{% endblock %}
+
+{% block body %}
+    <h1>Offer</h1>
+
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ offer.id }}</td>
+            </tr>
+            <tr>
+                <th>Comment</th>
+                <td>{{ offer.comment }}</td>
+            </tr>
+            <tr>
+                <th>Textarea</th>
+                <td>{{ offer.textarea }}</td>
+            </tr>
+            <tr>
+                <th>OfferDate</th>
+                <td>{{ offer.offerDate ? offer.offerDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>TermDate</th>
+                <td>{{ offer.termDate ? offer.termDate|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_offer_index') }}">back to list</a>
+
+    <a href="{{ path('app_offer_edit', {'id': offer.id}) }}">edit</a>
+
+    {{ include('offer/_delete_form.html.twig') }}
+{% endblock %}

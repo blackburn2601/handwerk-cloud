@@ -1,0 +1,10 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+
+    globals:
+        taskdrawings_dir: 'img/drawings/'
+        taskimages_dir: 'img/images/'
+
+when@test:
+    twig:
+        strict_variables: true
